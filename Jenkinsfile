@@ -26,8 +26,13 @@ pipeline {
                 }
             }
             steps {
-                echo "${BRANCH_NAME}"
-                echo "${env.BRANCH_NAME}"
+                if (env.BRANCH_NAME == "main"){
+                  IMG_REPO = "main"
+                } else {
+                  IMG_REPO = "mr"
+                }
+
+                echo "${IMG_REPO}"
 
                 echo 'Building image..'
                 script {
