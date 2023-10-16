@@ -26,14 +26,12 @@ pipeline {
                 }
             }
             steps {
+                echo "${BRANCH_NAME}"
+                echo "${env.BRANCH_NAME}"
+
                 echo 'Building image..'
                 script{
-                    if (env.BRANCH_NAME == main) {
-                        echo "Is main"
-                    } 
-                    else {
-                        echo "Is MR"
-                    }
+                    echo "${BRANCH_NAME}"
                 }
             }
         }
