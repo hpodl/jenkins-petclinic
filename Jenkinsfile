@@ -26,6 +26,7 @@ pipeline {
                 }
             }
             steps {
+                script {
                 if (env.BRANCH_NAME == "main"){
                   IMG_REPO = "main"
                 } else {
@@ -35,7 +36,6 @@ pipeline {
                 echo "${IMG_REPO}"
 
                 echo 'Building image..'
-                script {
                     docker.build("my-img")
                 }
             }
