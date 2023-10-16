@@ -33,7 +33,7 @@ pipeline {
                   IMG_REPO = "mr"
                 }
 
-                echo "${IMG_REPO}"
+                echo "Repo is: ${IMG_REPO}"
 
                 echo 'Building image..'
                     docker.build("my-img")
