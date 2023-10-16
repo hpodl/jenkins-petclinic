@@ -26,20 +26,18 @@ pipeline {
                 }
             }
             steps {
-                echo "${BRANCH_NAME}"
-                echo "${env.BRANCH_NAME}"
-                // echo 'Building image..'
-                // script{
-                //     if (env.BRANCH_NAME == main) {
-                //         echo "Is main"
-                //         env.IMAGE_NAME = "mydockertestacc/main"
-                //     } 
-                //     else {
-                //         echo "Is MR"
-                //         env.IMAGE_NAME = "mydockertestacc/mr"
-                //     }
-                // }
-                // echo "..named ${IMAGE_NAME}"
+                echo 'Building image..'
+                script{
+                    if (env.BRANCH_NAME == main) {
+                        echo "Is main"
+                        env.IMAGE_NAME = "mydockertestacc/main"
+                    } 
+                    else {
+                        echo "Is MR"
+                        env.IMAGE_NAME = "mydockertestacc/mr"
+                    }
+                }
+                echo "..named ${IMAGE_NAME}"
             }
         }
     }
