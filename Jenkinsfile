@@ -30,7 +30,9 @@ pipeline {
                 echo "${env.BRANCH_NAME}"
 
                 echo 'Building image..'
-                docker.build("my-img")
+                script {
+                    docker.build("my-img")
+                }
             }
         }
     }
