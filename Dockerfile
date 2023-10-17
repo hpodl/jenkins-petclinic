@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
+RUN mvn dependency:resolve
 
 COPY src ./src
 
-ENTRYPOINT ["./mvnw", "spring-boot:run"]
+ENTRYPOINT ["mvn", "spring-boot:run"]
