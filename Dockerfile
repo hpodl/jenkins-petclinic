@@ -1,11 +1,21 @@
-FROM maven:3.8.5-openjdk-17
+FROM maven:3.8.5-openjdk-17 as build
 
 WORKDIR /app
 
 COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN mvn dependency:resolve
+COPY src/ src 
+COPY pom.xml mvnw  ./
 
-COPY src ./src
+ENV MAVEN_CONFIG=""
 
-ENTRYPOINT ["mvn", "spring-boot:run"]
+RUN mvn clean package
+
+# Second image
+FROM eclipse-temurin:17.0.8.1_1-jre
+
+WORKDIR /app
+COPY --from=build /app/target/spring-petclinic-*.jar spring-petclinic.jar
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "spring-petclinic.jar"]
+
