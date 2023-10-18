@@ -17,7 +17,7 @@ pipeline {
             }
             steps {
                 echo 'Testing...'
-                sh 'MAVEN_CONFIG="" ./mvnw test'
+                sh 'mvn test'
             }
         }
         stage('Build') {
