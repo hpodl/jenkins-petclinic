@@ -16,7 +16,7 @@ pipeline {
                 changeRequest target: 'main'
             }
             steps {
-                echo 'Testing..'
+                echo 'Testing...'
                 sh 'mvn test'
             }
         }
