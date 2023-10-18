@@ -20,7 +20,7 @@ pipeline {
             }
             steps {
                 echo 'Testing...'
-                sh 'MVN_CONFIG="" ./mvnw test'
+                sh './mvnw test'
             }
         }
         stage('Build') {
