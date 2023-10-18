@@ -8,6 +8,7 @@ pipeline {
             }
             steps {
                 echo 'Checking style..'
+                sh 'mvn checkstyle:checkstyle'
             }
         }
         stage('Test') {
@@ -16,6 +17,7 @@ pipeline {
             }
             steps {
                 echo 'Testing..'
+                sh 'mvn test'
             }
         }
         stage('Build') {
