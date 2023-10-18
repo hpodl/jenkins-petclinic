@@ -19,8 +19,8 @@ pipeline {
                 changeRequest target: 'main'
             }
             steps {
-                echo 'Testing..'
-                sh 'MVN_CONFIG="" mvn test'
+                echo 'Testing...'
+                sh 'MVN_CONFIG="" ./mvnw test'
             }
         }
         stage('Build') {
