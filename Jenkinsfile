@@ -30,15 +30,20 @@ pipeline {
             steps {
                 script {
                 if (env.BRANCH_NAME == "main"){
-                  IMG_REPO = "main"
+                  IMG_REPO = "https://hub.docker.com/repositories/mydockertestacc/main"
                 } else {
-                  IMG_REPO = "mr"
+                  IMG_REPO = "https://hub.docker.com/repositories/mydockertestacc/mr"
                 }
 
                 echo "Repo is: ${IMG_REPO}"
 
                 echo 'Building image..'
-                    docker.build("my-img")
+                   image = docker.build("my-img")
+
+                docker.withRegistry(${IMG_REPO}, "dockerhub-login"){
+                    image.push("${env.GIT_COMMIT.take(8)}")
+                }
+                    
                 }
             }
         }
