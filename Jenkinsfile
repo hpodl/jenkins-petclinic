@@ -35,7 +35,7 @@ pipeline {
                       IMG_NAME = "mr"
                     }
     
-                    IMG_REPO = "https://hub.docker.com/"
+                    IMG_REPO = "https://hub.docker.com/v1/"
                     echo "Repo is: ${IMG_REPO}"
     
                     echo 'Building image..'
