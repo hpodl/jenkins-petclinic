@@ -35,13 +35,14 @@ pipeline {
                       IMG_NAME = "mr"
                     }
     
-                    IMG_REPO = "https://hub.docker.com/repositories/mydockertestacc"
+                    IMG_REPO = "https://hub.docker.com/repositories/mydockertestacc/${IMG_NAME}"
                     echo "Repo is: ${IMG_REPO}"
     
                     echo 'Building image..'
                        image = docker.build("${IMG_NAME}")
     
                     IMG_TAG = "${env.GIT_COMMIT.take(8)}" // workaround for short version of git commit id
+                    echo "Tagging with: ${IMG_TAG}"
                     docker.withRegistry("${IMG_REPO}", "dockerhub-login"){
                         image.push("$IMG_TAG")
                     }   
