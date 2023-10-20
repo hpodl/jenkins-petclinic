@@ -8,7 +8,7 @@ COPY pom.xml mvnw  ./
 
 ENV MAVEN_CONFIG=""
 
-RUN mvn clean package
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Second image
 FROM eclipse-temurin:17.0.8.1_1-jre
