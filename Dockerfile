@@ -21,5 +21,5 @@ COPY jmx-config.yml jmx-config.yml
 RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.19.0/jmx_prometheus_javaagent-0.19.0.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java","-javaagent:/jmx_prometheus_javaagent-0.19.0.jar=8088:/jmx-config.yml", "-jar", "spring-petclinic.jar"]
+ENTRYPOINT ["java","-javaagent:/app/jmx_prometheus_javaagent-0.19.0.jar=8088:/app/jmx-config.yml", "-jar", "spring-petclinic.jar"]
 
