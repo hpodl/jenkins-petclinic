@@ -1,6 +1,10 @@
 pipeline {
     agent any
-
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '10'))
+    }
+ 
     stages {
         stage('Checkstyle') {
             when {
