@@ -26,5 +26,5 @@ COPY jmx-config.yml jmx-config.yml
 RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.19.0/jmx_prometheus_javaagent-0.19.0.jar
 
 ENV RUN_PROFILE="dev"
-ENTRYPOINT "java -javaagent:/app/jmx_prometheus_javaagent-0.19.0.jar=8088:/app/jmx-config.yml -jar spring-petclinic.jar --spring.profiles.active=${RUN_PROFILE}"
+ENTRYPOINT java -javaagent:/app/jmx_prometheus_javaagent-0.19.0.jar=8088:/app/jmx-config.yml -jar /app/spring-petclinic.jar --spring.profiles.active="${RUN_PROFILE}"
 
