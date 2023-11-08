@@ -60,16 +60,19 @@ pipeline {
                     changeRequest()
                 }
             } 
+            
             steps {
-                echo "Connecting to VM..."
-                
-                echo "Checking for previous version..."
-
-                echo "Downloading new image..."
-                
-                echo "Running the image..."
-
-                echo "The link is: abc.example.com"
+                node {
+                    def remote = [:]
+                    remote.name = 'test'
+                    remote.host = 'test.domain.com'
+                    remote.user = 'root'
+                    remote.password = 'password'
+                    remote.allowAnyHosts = true
+                    stage('Remote SSH') {
+                        sshCommand remote: remote, command: "docker ps | grep"
+                    }
+                }
             }
         }
     }
