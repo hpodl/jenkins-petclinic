@@ -53,5 +53,24 @@ pipeline {
                 }
             }
         }
+        stage('Deploy new version') {
+            when {
+                anyOf {
+                    branch 'main'
+                    changeRequest()
+                }
+            } 
+            steps {
+                echo "Connecting to VM..."
+                
+                echo "Checking for previous version..."
+
+                echo "Downloading new image..."
+                
+                echo "Running the image..."
+
+                echo "The link is: abc.example.com"
+            }
+        }
     }
 }
