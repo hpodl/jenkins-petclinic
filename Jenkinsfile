@@ -64,7 +64,6 @@ pipeline {
 
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
                 string(credentialsId: 'petclinic_bastion_user_address', variable: 'BASTION')]) {
-                    echo "$KEYFILE"
                     sh '''
                         chmod 600 $KEYFILE
 
