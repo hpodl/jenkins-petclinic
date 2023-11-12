@@ -1,6 +1,5 @@
 pipeline {
     agent any
-    
     options {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '10'))
     }
@@ -58,6 +57,7 @@ pipeline {
                 branch 'main'
             } 
             
+            
             steps {
                 input "Approve deployment?"
                 echo "Deployment approved."
@@ -65,10 +65,11 @@ pipeline {
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
                 string(credentialsId: 'petclinic_bastion_user_address', variable: 'BASTION')]) {
                     sh '''
+
                         chmod 600 $KEYFILE
 
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
-                            ansible-playbook -i inventory patch-app-playbook.yaml
+                            ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=latest force_stop_old=true"
                             exit
                         EOF'''
                 }
