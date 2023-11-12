@@ -1,0 +1,103 @@
+---
+- name: Set up bastion instance and initialize db through it
+  hosts: bastion
+  remote_user: ec2-user
+  vars_files:
+    - ./tf_variables.yaml
+  tasks:
+    - name: Set up connections to webserver instances
+      block:
+        - name: Copy keys
+          ansible.builtin.copy:
+            src: '{{ playbook_dir }}/webserver_key'
+            dest: /home/ec2-user/
+            mode: "0600"
+
+    - name: Configure mysql database schema
+      block:
+        - name: Update or install mariadb
+          become: true
+          ansible.builtin.package:
+            name: mariadb105-server.x86_64
+
+        - name: Move script file
+          ansible.builtin.copy:
+            src: '{{ playbook_dir }}/user.sql'
+            dest: /home/ec2-user/user.sql
+            mode: "0644"
+
+        - name: Run mysql command
+          become: true
+          ansible.builtin.shell: mariadb --host={{ db_url }} --port=3306 --user={{ db_user }} --password={{ db_password }} < /home/ec2-user/user.sql
+          changed_when: true # temporary hack
+
+    - name: Set up remote ansible for quick patching through a pipeline
+      block:
+        - name: Download ansible
+          become: true
+          ansible.builtin.package:
+            name: ansible
+
+        - name: Copy inventory file, variables and playbook
+          ansible.builtin.copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+            mode: "0644"
+          loop:
+            - src: '{{ playbook_dir }}/inventory'
+              dest: /home/ec2-user/
+            - src: '{{ playbook_dir }}/patch-app-playbook.yaml'
+              dest: /home/ec2-user/
+            - src: '{{ playbook_dir }}/tf_variables.yaml'
+              dest: '/home/ec2-user/'
+
+        - name: Remove bastion from inventory
+          ansible.builtin.lineinfile:
+            path: /home/ec2-user/inventory
+            search_string: bastion
+            state: absent
+
+- name: Set up web servers
+  hosts: webservers
+  remote_user: ec2-user # for simplicity
+
+  vars:
+    docker_image: mydockertestacc/main:6ff96326
+  vars_files:
+    - ./tf_variables.yaml
+
+  tasks:
+    - name: Update or install docker
+      become: true
+      ansible.builtin.package:
+        name: docker
+
+    - name: Start and enable docker daemon
+      become: true
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Pull docker image
+      become: true
+      community.docker.docker_image:
+        name: '{{ docker_image }}'
+        source: pull
+        pull:
+          platform: amd64
+
+    - name: Run docker image
+      become: true
+      community.docker.docker_container:
+        name: webserver_container
+        image: '{{ docker_image }}'
+        state: started
+        published_ports:
+          - 80:8080
+          - 8088:8088
+        env:
+          RUN_PROFILE: mysql
+          MYSQL_URL: "jdbc:mysql://{{ db_url }}/petclinic"
+          MYSQL_USER: '{{ db_user }}'
+          MYSQL_PASS: '{{ db_password }}'

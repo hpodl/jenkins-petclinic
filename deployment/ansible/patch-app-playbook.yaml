@@ -1,0 +1,43 @@
+---
+- name: Set up web servers
+  hosts: webservers
+  remote_user: ec2-user # for simplicity
+
+  vars:
+    docker_image: mydockertestacc/main:a30e50ed
+    force_stop_old: false
+  vars_files:
+    - ./tf_variables.yaml
+
+  tasks:
+    - name: Pull docker image
+      become: true
+      register: pulled
+      community.docker.docker_image:
+        name: '{{ docker_image }}'
+        source: pull
+        pull:
+          platform: amd64
+
+    - name: Stop containers running old version
+      become: true
+      when: pulled.changed or force_stop_old # won't notice tag change otherwise
+      community.docker.docker_container:
+        name: webserver_container
+        image: '{{ docker_image }}'
+        state: absent
+
+    - name: Run docker image
+      become: true
+      community.docker.docker_container:
+        name: webserver_container
+        image: '{{ docker_image }}'
+        state: started
+        published_ports:
+          - 80:8080
+          - 8088:8088
+        env:
+          RUN_PROFILE: mysql
+          MYSQL_URL: "jdbc:mysql://{{ db_url }}/petclinic"
+          MYSQL_USER: '{{ db_user }}'
+          MYSQL_PASS: '{{ db_password }}'

@@ -55,23 +55,23 @@ pipeline {
         }
         stage('Deploy new version') {
             when {
-                anyOf {
-                    branch 'main'
-                    changeRequest()
-                }
+                branch 'main'
             } 
             
             steps {
-                node {
-                    def remote = [:]
-                    remote.name = 'test'
-                    remote.host = 'test.domain.com'
-                    remote.user = 'root'
-                    remote.password = 'password'
-                    remote.allowAnyHosts = true
-                    stage('Remote SSH') {
-                        sshCommand remote: remote, command: "docker ps | grep"
-                    }
+                // input "Approve deployment?"
+                echo "Deployment approved."
+
+                withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
+                string(credentialsId: 'petclinic_bastion_user_address', variable: 'BASTION')]) {
+                    echo "$KEYFILE"
+                    sh '''
+                        chmod 600 $KEYFILE
+
+                        ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
+                            ansible-playbook -i inventory patch-app-playbook.yaml
+                            exit
+                        EOF'''
                 }
             }
         }
