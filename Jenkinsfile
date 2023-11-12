@@ -59,7 +59,7 @@ pipeline {
             } 
             
             steps {
-                // input "Approve deployment?"
+                input "Approve deployment?"
                 echo "Deployment approved."
 
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
