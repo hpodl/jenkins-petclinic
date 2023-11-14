@@ -33,9 +33,19 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == "main"){
+                        def userInput = input(
+                        id: 'userInput', message: 'Choose an option:',
+                        parameters: [
+                            choice(choices: 'MAJOR\n MINOR\n PATCH', description: 'Select which part of semver to bump:')
+                        ])
+
                       IMG_NAME = "main"
+                      sh "python3 semver_bump.py"
+                    
+                    
                     } else {
                       IMG_NAME = "mr"
+                      IMG_TAG = "${env.GIT_COMMIT.take(8)}" // workaround for short version of git commit id
                     }
     
                     IMG_REPO = "https://index.docker.io/v1/"
@@ -44,7 +54,6 @@ pipeline {
                     echo 'Building image..'
                        image = docker.build("mydockertestacc/${IMG_NAME}")
     
-                    IMG_TAG = "${env.GIT_COMMIT.take(8)}" // workaround for short version of git commit id
                     echo "Tagging with: ${IMG_TAG}"
                     docker.withRegistry("${IMG_REPO}", "dockerhub-login"){
                         image.push("$IMG_TAG")
