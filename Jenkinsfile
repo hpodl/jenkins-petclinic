@@ -32,17 +32,13 @@ pipeline {
             }
             steps {
                 script {
-                    if (env.BRANCH_NAME == "main"){
-                        def userInput = input(
-                        id: 'userInput', message: 'Choose an option:',
-                        parameters: [
-                            choice(choices: 'MAJOR\n MINOR\n PATCH', description: 'Select which part of semver to bump:')
-                        ])
+                    if (env.BRANCH_NAME == "main") {
+                        IMG_NAME = "main"
+                        IMG_TAG = sh (
+                            script: 'python3 ./semver_bump.py',
+                            returnStdout: true
+                        ).trim()
 
-                      IMG_NAME = "main"
-                      sh "python3 semver_bump.py"
-                    
-                    
                     } else {
                       IMG_NAME = "mr"
                       IMG_TAG = "${env.GIT_COMMIT.take(8)}" // workaround for short version of git commit id
@@ -66,7 +62,6 @@ pipeline {
                 branch 'main'
             } 
             
-            
             steps {
                 input "Approve deployment?"
                 echo "Deployment approved."
@@ -74,7 +69,6 @@ pipeline {
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
                 string(credentialsId: 'petclinic_bastion_user_address', variable: 'BASTION')]) {
                     sh '''
-
                         chmod 600 $KEYFILE
 
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
