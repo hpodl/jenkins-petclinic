@@ -78,7 +78,7 @@ pipeline {
                         chmod 600 $KEYFILE
 
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
-                            ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=&IMG_TAG force_stop_old=true"
+                            ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=$IMG_TAG force_stop_old=true"
                             exit
 
                         cat tf_variables.yaml | grep ip
