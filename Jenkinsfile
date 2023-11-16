@@ -33,6 +33,11 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == "main") {
+                           withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh """
+                                git pull --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic
+                            """
+                        }
                         IMG_NAME = "main"
                         IMG_TAG = sh (
                             script: 'python3 ./semver_bump.py',
