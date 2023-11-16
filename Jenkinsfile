@@ -77,6 +77,8 @@ pipeline {
                     sh '''
                         chmod 600 $KEYFILE
 
+                        export IMG_TAG=`docker describe --tags --abbrev=0`
+
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
                             ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=$IMG_TAG force_stop_old=true"
                             exit
