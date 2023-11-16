@@ -67,7 +67,7 @@ pipeline {
             when {
                 branch 'main'
             }
-            
+             
             steps {
                 input "Approve deployment?"
                 echo "Deployment approved."
