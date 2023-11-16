@@ -35,7 +35,7 @@ pipeline {
                     if (env.BRANCH_NAME == "main") {
                            withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
-                                git pull --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic
+                                git pull --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
                             """
                         }
                         IMG_NAME = "main"
