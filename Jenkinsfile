@@ -33,6 +33,11 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == "main") {
+                           withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh """
+                                git pull --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
+                            """
+                        }
                         IMG_NAME = "main"
                         IMG_TAG = sh (
                             script: 'python3 ./semver_bump.py',
@@ -41,8 +46,8 @@ pipeline {
 
                         withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
-                                git tag $IMG_TAG
-                                git push --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic
+                                git tag -f $IMG_TAG
+                                git push --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
                             """
                         }
                     } else {
@@ -70,14 +75,14 @@ pipeline {
              
             steps {
                 input "Approve deployment?"
-                echo "Deployment approved."
+                echo "Deployment approved." 
 
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
                 string(credentialsId: 'petclinic_bastion_user_address', variable: 'BASTION')]) {
                     sh '''
                         chmod 600 $KEYFILE
 
-                        export IMG_TAG=`docker describe --tags --abbrev=0`
+                        export IMG_TAG=`python3 ./semver_bump.py`
 
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
                             ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=$IMG_TAG force_stop_old=true"
