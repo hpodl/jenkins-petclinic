@@ -74,7 +74,7 @@ pipeline {
             }
              
             steps {
-                input "Approve deployment?"
+                input "Approve deployment?" 
                 echo "Deployment approved." 
 
                 withCredentials([file(credentialsId: 'petclinic_bastion_key', variable: 'KEYFILE'), 
@@ -82,7 +82,7 @@ pipeline {
                     sh '''
                         chmod 600 $KEYFILE
 
-                        export IMG_TAG=`python3 ./semver_bump.py`
+                        export IMG_TAG=`git describe --tags --abbrev=0`
 
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
                             ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=$IMG_TAG force_stop_old=true"
