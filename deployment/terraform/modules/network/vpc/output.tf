@@ -37,7 +37,9 @@ output "db_subnet_group_name" {
 output "sg_all_within_subnet_id" {
   value = aws_security_group.sg_all_within_subnet.id
 }
-
+output "lb_eip_address" {
+  value = aws_eip.lb_eip.public_ip
+}
 output "lb_eip_id" {
   value = aws_eip.lb_eip.id
 }

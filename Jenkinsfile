@@ -80,6 +80,8 @@ pipeline {
                         ssh "$BASTION" -o "StrictHostKeyChecking=no" -i $KEYFILE -tt << EOF
                             ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=latest force_stop_old=true"
                             exit
+
+                        cat tf_variables.yaml | grep ip
                         EOF'''
                 }
             }

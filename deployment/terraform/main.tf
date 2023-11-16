@@ -47,6 +47,8 @@ module "bastion" {
 module "create_ansible_files" {
   source = "./modules/create_ansible_files"
 
+  load_balancer_ip = module.vpc.lb_eip_address
+  
   # webserver args
   webserver_ips    = module.compute.webserver_priv_ips
   private_key_path = var.private_key_path

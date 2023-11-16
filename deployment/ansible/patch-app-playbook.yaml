@@ -41,3 +41,7 @@
           MYSQL_URL: "jdbc:mysql://{{ db_url }}/petclinic"
           MYSQL_USER: '{{ db_user }}'
           MYSQL_PASS: '{{ db_password }}'
+
+    - name: Print load_balancer IP
+      ansible.builtin.debug:
+        var: load_balancer_ip

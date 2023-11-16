@@ -3,6 +3,9 @@ variable "ansible_dir" {
   default = "../ansible"
 }
 
+variable "load_balancer_ip" {
+  type = string
+}
 variable "webserver_ips" {
   type = list(string)
 }
