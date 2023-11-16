@@ -66,8 +66,8 @@ pipeline {
         stage('Deploy new version') {
             when {
                 branch 'main'
-            } 
-            
+            }
+             
             steps {
                 input "Approve deployment?"
                 echo "Deployment approved."
