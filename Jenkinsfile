@@ -39,6 +39,12 @@ pipeline {
                             returnStdout: true
                         ).trim()
 
+                        withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh """
+                                git tag $IMG_TAG
+                                git push --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic
+                            """
+                        }
                     } else {
                       IMG_NAME = "mr"
                       IMG_TAG = "${env.GIT_COMMIT.take(8)}" // workaround for short version of git commit id
