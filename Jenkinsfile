@@ -46,7 +46,7 @@ pipeline {
 
                         withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
-                                git tag $IMG_TAG
+                                git tag -f $IMG_TAG
                                 git push --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
                             """
                         }
