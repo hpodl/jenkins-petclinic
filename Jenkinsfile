@@ -34,9 +34,9 @@ pipeline {
                 script {
                     if (env.BRANCH_NAME == "main") {
                            withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            sh """
+                            sh'''
                                 git pull --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
-                            """
+                            '''
                         }
                         IMG_NAME = "main"
                         IMG_TAG = sh (
@@ -45,10 +45,10 @@ pipeline {
                         ).trim()
 
                         withCredentials([usernamePassword(credentialsId: 'gh_user', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            sh """
-                                git tag -f $IMG_TAG
+                            sh "git tag -f $IMG_TAG"
+                            sh '''
                                 git push --tags https://$USERNAME:$PASSWORD@github.com/hpodl/jenkins-petclinic -f
-                            """
+                            '''
                         }
                     } else {
                       IMG_NAME = "mr"
@@ -88,7 +88,7 @@ pipeline {
                             ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory patch-app-playbook.yaml --extra-vars "image_tag=$IMG_TAG force_stop_old=true"
                             exit
 
-                        cat tf_variables.yaml | grep ip
+                        echo `cat tf_variables.yaml | grep ip`
                         EOF'''
                 }
             }
