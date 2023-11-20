@@ -111,7 +111,7 @@ resource "aws_security_group" "sg_database" {
     protocol    = "tcp"
     to_port     = 3306
     from_port   = 3306
-    cidr_blocks = [aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
+    cidr_blocks = [aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block, aws_subnet.bastion_subnet.cidr_block]
   }
 }
 
