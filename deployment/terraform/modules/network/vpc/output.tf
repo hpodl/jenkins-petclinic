@@ -6,6 +6,10 @@ output "backup_subnet_id" {
   value = aws_subnet.db_backup_subnet.id
 }
 
+output "bastion_subnet_id" {
+  value = aws_subnet.bastion_subnet.id
+}
+
 output "vpc_id" {
   value = aws_vpc.main_cloud.id
 }
