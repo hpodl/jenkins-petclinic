@@ -16,11 +16,16 @@ resource "aws_subnet" "db_backup_subnet" {
   availability_zone = "us-east-1b"
 }
 
+resource "aws_subnet" "bastion_subnet" {
+  vpc_id = aws_vpc.main_cloud.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "us-east-1a"
+}
+
 resource "aws_db_subnet_group" "petclinic_db_subnet" {
   name       = "petclinic_db_subnet"
   subnet_ids = [aws_subnet.webserver_subnet.id, aws_subnet.db_backup_subnet.id]
 }
-
 
 ### Security groups ###
 
@@ -129,6 +134,14 @@ resource "aws_security_group" "sg_all_within_subnet" {
     cidr_blocks = [aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
 
   }
+
+  ingress {
+    description = "incoming from nat gateway"
+    protocol = -1
+    from_port = 0
+    to_port = 0
+    cidr_blocks = [join("/", [aws_eip.lb_eip.public_ip, "32"])]
+  }
 }
 
 ### Routing ###
@@ -137,7 +150,27 @@ resource "aws_internet_gateway" "gateway_main" {
   vpc_id = aws_vpc.main_cloud.id
 }
 
-resource "aws_route_table" "main_route_table" {
+resource "aws_nat_gateway" "webservers_nat_gateway" {
+  allocation_id = aws_eip.nat_gw_eip.id
+  subnet_id = aws_subnet.bastion_subnet.id
+  depends_on = [ aws_internet_gateway.gateway_main ]
+}
+
+resource "aws_route_table" "webserver_route_table" {
+  vpc_id = aws_vpc.main_cloud.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.webservers_nat_gateway.id
+  }
+}
+
+resource "aws_route_table_association" "webserver_rt_to_webserver_subnet" {
+  route_table_id = aws_route_table.webserver_route_table.id
+  subnet_id      = aws_subnet.webserver_subnet.id
+}
+
+resource "aws_route_table" "bastion_route_table" {
   vpc_id = aws_vpc.main_cloud.id
 
   route {
@@ -146,9 +179,10 @@ resource "aws_route_table" "main_route_table" {
   }
 }
 
-resource "aws_route_table_association" "main_rt_to_main_subnet" {
-  route_table_id = aws_route_table.main_route_table.id
-  subnet_id      = aws_subnet.webserver_subnet.id
+resource "aws_route_table_association" "bastion_rt_to_bastion_subnet" {
+  route_table_id = aws_route_table.bastion_route_table.id
+  subnet_id = aws_subnet.bastion_subnet.id
 }
 
 resource "aws_eip" "lb_eip" {}
+resource "aws_eip" "nat_gw_eip" {}
