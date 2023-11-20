@@ -17,6 +17,7 @@ resource "aws_launch_template" "webserver_template" {
   key_name      = aws_key_pair.webserver_ssh_key.key_name
 
   network_interfaces {
+    associate_public_ip_address = true
     subnet_id                   = var.subnet_id
     security_groups             = var.security_group_ids
   }
