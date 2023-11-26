@@ -24,7 +24,7 @@ module "vpc" {
 module "load_balancer" {
   source             = "./modules/load_balancer"
   vpc_id             = module.vpc.vpc_id
-  subnet_id          = module.vpc.subnet_id
+  subnet_id          = module.vpc.bastion_subnet_id
   security_group_ids = [module.vpc.sg_allow_http_id]
   lb_eip_id          = module.vpc.lb_eip_id
 }
