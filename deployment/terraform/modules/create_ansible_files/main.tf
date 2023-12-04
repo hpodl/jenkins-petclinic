@@ -18,6 +18,9 @@ resource "local_file" "tf_ansible_inventory" {
 [bastion]
 ${var.bastion_ip} ansible_ssh_private_key_file=${var.bastion_key_name}
 
+[monitoring]
+${var.monitoring_ip} ansible_ssh_private_key_file=${var.monitoring_key_name}
+
 [webservers]
 ${local.newline_separated_hosts} 
 

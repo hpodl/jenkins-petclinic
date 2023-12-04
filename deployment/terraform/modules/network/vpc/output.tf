@@ -34,6 +34,10 @@ output "sg_database_id" {
   value = aws_security_group.sg_database.id
 }
 
+output "sg_monitoring" {
+  value = aws_security_group.sg_monitoring.id
+}
+
 output "db_subnet_group_name" {
   value = aws_db_subnet_group.petclinic_db_subnet.name
 }

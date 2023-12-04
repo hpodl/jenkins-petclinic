@@ -12,6 +12,9 @@ variable "webserver_ips" {
 variable "bastion_ip" {
   type = string
 }
+variable "monitoring_ip" {
+  type = string
+}
 
 variable "private_key_path" {
   type = string
@@ -26,9 +29,9 @@ variable "bastion_key_name" {
   default = "bastion_key"
 }
 
-variable "bastion_pubkey" {
+variable "monitoring_key_name" {
   type    = string
-  default = "bastion_key"
+  default = "monitoring_key"
 }
 
 variable "db_user" {

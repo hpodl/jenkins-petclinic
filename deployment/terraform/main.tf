@@ -25,7 +25,7 @@ module "load_balancer" {
   source             = "./modules/load_balancer"
   vpc_id             = module.vpc.vpc_id
   subnet_id          = module.vpc.bastion_subnet_id
-  security_group_ids = [module.vpc.sg_allow_http_id]
+  security_group_ids = [module.vpc.sg_allow_http_id, module.vpc.sg_all_within_subnet_id, module.vpc.sg_egress_all_id]
   lb_eip_id          = module.vpc.lb_eip_id
 }
 
@@ -56,12 +56,13 @@ module "create_ansible_files" {
 
   # bastion args
   bastion_ip     = module.bastion.bastion_instance_ip
-  bastion_pubkey = module.bastion.bastion_pubkey
 
   # db args
   db_user   = var.db_user
   db_passwd = var.db_passwd
   db_url    = module.database.db_url
+
+  monitoring_ip = module.monitoring.monitoring_ip
 }
 
 module "database" {
@@ -70,4 +71,10 @@ module "database" {
   db_passwd            = var.db_passwd
   db_subnet_group_name = module.vpc.db_subnet_group_name
   db_security_groups   = [module.vpc.sg_database_id]
+}
+module "monitoring" {
+  source = "./modules/monitoring"
+  vpc_id = module.vpc.vpc_id
+  subnet_id = module.vpc.bastion_subnet_id
+  security_group_ids = [module.vpc.sg_monitoring, module.vpc.sg_allow_ssh_id, module.vpc.sg_egress_all_id, module.vpc.sg_all_within_subnet_id]
 }

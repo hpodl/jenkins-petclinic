@@ -7,9 +7,14 @@
   tasks:
     - name: Set up connections to webserver instances
       block:
-        - name: Copy keys
+        - name: Copy webserver key
           ansible.builtin.copy:
             src: '{{ playbook_dir }}/webserver_key'
+            dest: /home/ec2-user/
+            mode: "0600"
+        - name: Copy monitoring key
+          ansible.builtin.copy:
+            src: '{{ playbook_dir }}/monitoring_key'
             dest: /home/ec2-user/
             mode: "0600"
 
@@ -62,7 +67,7 @@
   remote_user: ec2-user # for simplicity
 
   vars:
-    docker_image: mydockertestacc/main:6ff96326
+    docker_image: mydockertestacc/main:{{ IMG_TAG }}
   vars_files:
     - ./tf_variables.yaml
 
@@ -101,3 +106,36 @@
           MYSQL_URL: "jdbc:mysql://{{ db_url }}/petclinic"
           MYSQL_USER: '{{ db_user }}'
           MYSQL_PASS: '{{ db_password }}'
+
+- name: Set up monitoring instance
+  hosts: monitoring
+  remote_user: ec2-user
+
+  tasks:
+    - name: Install and launch Grafana
+      block:
+        - name: Download Grafana
+          ansible.builtin.get_url:
+            url: 'https://dl.grafana.com/enterprise/release/grafana-enterprise-10.2.2-1.x86_64.rpm'
+            dest: /tmp
+            checksum: sha256:8cb0209623c3a48c23bc58bfab7bf5467853331309338098e9c9a7962687fd58
+            mode: "0644"
+
+        - name: Install Grafana
+          become: true
+          ansible.builtin.yum:
+            name: /tmp/grafana-enterprise-10.2.2-1.x86_64.rpm
+            state: present
+            disable_gpg_check: true
+
+        - name: Reload systemd daemon
+          become: true
+          ansible.builtin.systemd:
+            daemon_reload: true
+
+        - name: Start and enable Grafana
+          become: true
+          ansible.builtin.service:
+            name: grafana-server
+            state: started
+            enabled: true

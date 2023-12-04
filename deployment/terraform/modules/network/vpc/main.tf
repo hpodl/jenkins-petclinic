@@ -140,7 +140,21 @@ resource "aws_security_group" "sg_all_within_subnet" {
     protocol = -1
     from_port = 0
     to_port = 0
-    cidr_blocks = [join("/", [aws_eip.lb_eip.public_ip, "32"])]
+    cidr_blocks = [join("/", [aws_eip.nat_gw_eip.public_ip, "32"])]
+  }
+}
+
+resource "aws_security_group" "sg_monitoring" {
+  name        = "monitoring_sg"
+  description = "Allows all egress traffic and ingress mysql port traffic from within the subnets"
+  vpc_id      = aws_vpc.main_cloud.id
+
+  ingress {
+    description = "incoming tcp on port 3000"
+    protocol    = "tcp"
+    to_port     = 3000
+    from_port   = 3000
+    cidr_blocks = [ "0.0.0.0/0" ]
   }
 }
 
@@ -158,6 +172,7 @@ resource "aws_nat_gateway" "webservers_nat_gateway" {
 
 resource "aws_route_table" "webserver_route_table" {
   vpc_id = aws_vpc.main_cloud.id
+  
 
   route {
     cidr_block = "0.0.0.0/0"
