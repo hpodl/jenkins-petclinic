@@ -123,7 +123,7 @@ resource "aws_security_group" "sg_all_within_subnet" {
     protocol    = -1
     to_port     = 0
     from_port   = 0
-    cidr_blocks = [aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
+    cidr_blocks = [aws_subnet.bastion_subnet.cidr_block, aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
 
   }
   egress {
@@ -131,7 +131,7 @@ resource "aws_security_group" "sg_all_within_subnet" {
     protocol    = -1
     to_port     = 0
     from_port   = 0
-    cidr_blocks = [aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
+    cidr_blocks = [aws_subnet.bastion_subnet.cidr_block, aws_subnet.webserver_subnet.cidr_block, aws_subnet.db_backup_subnet.cidr_block]
 
   }
 
