@@ -13,10 +13,6 @@ resource "aws_db_instance" "petclinic_db" {
   db_subnet_group_name   = var.db_subnet_group_name
   skip_final_snapshot    = true
   vpc_security_group_ids = var.db_security_groups
-
-  # provisioner "local-exec" {
-  #   command = "mariadb --host=${self.address} --port=${self.port} --user=${self.username} --password=${self.password} < ${local.sql_file}"
-  # }
 }
 
 resource "local_file" "db_create_script" {
