@@ -14,8 +14,7 @@ resource "aws_lb_target_group" "webservers_tg" {
   vpc_id      = var.vpc_id
   name        = "webservers-target-group"
   port        = 80
-  protocol    = "TCP"
-  target_type = "instance"
+  protocol    = "HTTP"
 }
 
 resource "aws_lb_listener" "webserver_lb_listener" {

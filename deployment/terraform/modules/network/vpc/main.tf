@@ -156,6 +156,13 @@ resource "aws_security_group" "sg_monitoring" {
     from_port   = 3000
     cidr_blocks = [ "0.0.0.0/0" ]
   }
+  egress {
+    description = "egress tcp to port 8088 (jmx exporter)"
+    protocol    = "tcp"
+    to_port     = 8088
+    from_port   = 8088
+    cidr_blocks = [ "0.0.0.0/0" ]  
+  }
 }
 
 ### Routing ###
