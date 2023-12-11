@@ -1,0 +1,21 @@
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+
+rule_files:
+  - all.rules
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'java_jmx'
+    metrics_path: /metrics
+    static_configs:
+      - targets: {{ webserver_ips|map('string_prefix', ':8088')|list }}
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']

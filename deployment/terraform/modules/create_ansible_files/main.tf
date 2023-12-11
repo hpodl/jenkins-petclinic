@@ -7,7 +7,6 @@ locals {
 
   hosts_file_entries = [for ip in var.webserver_ips : "${ip} ${var.webserver_pubkey}"]
   hosts_file_content = join("\n", local.hosts_file_entries)
-
 }
 
 resource "local_file" "tf_ansible_inventory" {
@@ -40,5 +39,6 @@ bastion_ip: ${var.bastion_ip}
 db_user: ${var.db_user}
 db_password: ${var.db_passwd}
 db_url: ${var.db_url}
+webserver_ips: [${ join(", ", var.webserver_ips) }]
 EOF
 }

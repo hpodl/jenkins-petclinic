@@ -110,8 +110,23 @@
 - name: Set up monitoring instance
   hosts: monitoring
   remote_user: ec2-user
+  vars_files:
+    - ./tf_variables.yaml
+  roles:
+    - role: prometheus
+      prometheus_config_file: './prometheus.yml.j2'
+      become: true
+      tags: ['config']
 
   tasks:
+    - name: Debug
+      debug:
+        var: result
+      vars:
+        suffix: ':8088'
+        result: "{{ webserver_ips | product([suffix]) | map('join') | list }}"
+      tags: ['debug']
+
     - name: Install and launch Grafana
       block:
         - name: Download Grafana
@@ -139,3 +154,31 @@
             name: grafana-server
             state: started
             enabled: true
+
+    # - name: Install and launch Prometheus
+    #   block:
+    #     - name: Download Prometheus
+    #       ansible.builtin.get_url:
+    #         url: 'https://github.com/prometheus/prometheus/releases/download/v2.48.1/prometheus-2.48.1.linux-amd64.tar.gz'
+    #         dest: /tmp
+    #         checksum: sha256:5d58b52ccfeff25700bc8d14ecc1235cbf112a05041e3b2f6900d16b44856f6f
+    #         mode: "0644"
+
+    #     - name: Install Prometheus
+    #       become: true
+    #       ansible.builtin.yum:
+    #         name: /tmp/prometheus-2.48.1.linux-amd64.tar.gz
+    #         state: present
+    #         disable_gpg_check: true
+
+    #     - name: Reload systemd daemon
+    #       become: true
+    #       ansible.builtin.systemd:
+    #         daemon_reload: true
+
+    #     - name: Start and enable Prometheus
+    #       become: true
+    #       ansible.builtin.service:
+    #         name: prometheus
+    #         state: started
+    #         enabled: true

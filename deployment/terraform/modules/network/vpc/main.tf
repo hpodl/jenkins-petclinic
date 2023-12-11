@@ -150,7 +150,15 @@ resource "aws_security_group" "sg_monitoring" {
   vpc_id      = aws_vpc.main_cloud.id
 
   ingress {
-    description = "incoming tcp on port 3000"
+    description = "incoming tcp on port 9090 (prometheus)"
+    protocol    = "tcp"
+    to_port     = 9090
+    from_port   = 9090
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+
+  ingress {
+    description = "incoming tcp on port 3000 (grafana)"
     protocol    = "tcp"
     to_port     = 3000
     from_port   = 3000
