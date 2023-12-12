@@ -157,13 +157,6 @@ resource "aws_security_group" "sg_monitoring" {
     cidr_blocks = [ "0.0.0.0/0" ]
   }
 
-  ingress {
-    description = "incoming tcp on port 3000 (grafana)"
-    protocol    = "tcp"
-    to_port     = 3000
-    from_port   = 3000
-    cidr_blocks = [ "0.0.0.0/0" ]
-  }
   egress {
     description = "egress tcp to port 8088 (jmx exporter)"
     protocol    = "tcp"
