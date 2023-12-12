@@ -5,7 +5,7 @@ global:
 rule_files:
   - all.rules
 
-scrape_configs:
+scrape_configs: 
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
@@ -13,7 +13,7 @@ scrape_configs:
   - job_name: 'java_jmx'
     metrics_path: /metrics
     static_configs:
-      - targets: {{ webserver_ips|map('string_prefix', ':8088')|list }}
+      - targets: {{ webserver_ips | product([":8088"]) | map('join') | list }}
 
 alerting:
   alertmanagers:
