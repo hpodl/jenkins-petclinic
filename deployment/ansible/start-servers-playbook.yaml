@@ -114,24 +114,18 @@
     - ./tf_variables.yaml
   roles:
     - role: prometheus.prometheus.prometheus
-      prometheus_config_file: '/prometheus.yml'
-      become: true
       tags: ['config']
 
+      prometheus_scrape_configs:
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['localhost:9090']
+        - job_name: 'java_jmx'
+          metrics_path: /metrics
+          static_configs:
+            - targets: '{{ webserver_ips | product([":8088"]) | map("join") | list }}'
+
   tasks:
-    - name: Expand template
-      ansible.builtin.template:
-        src: '{{ playbook_dir }}/prometheus.yml.j2'
-        dest: '{{ playbook_dir }}/prometheus.yml'
-        mode: "0644"
-
-    - name: Copy Prometheus config file to the target host
-      ansible.builtin.copy:
-        src: '{{ playbook_dir }}/prometheus.yml'
-        dest: '/prometheus.yml'
-        mode: "0644"
-      become: true
-
     - name: Install and launch Grafana
       block:
         - name: Download Grafana
