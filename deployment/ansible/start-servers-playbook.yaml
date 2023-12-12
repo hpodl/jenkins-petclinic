@@ -115,7 +115,6 @@
   roles:
     - role: prometheus.prometheus.prometheus
       tags: ['config']
-
       prometheus_scrape_configs:
         - job_name: 'prometheus'
           static_configs:
@@ -124,6 +123,10 @@
           metrics_path: /metrics
           static_configs:
             - targets: '{{ webserver_ips | product([":8088"]) | map("join") | list }}'
+      prometheus_alertmanager_config:
+        - scheme: http
+          static_configs:
+            - targets: ['localhost:9093']
 
   tasks:
     - name: Install and launch Grafana
