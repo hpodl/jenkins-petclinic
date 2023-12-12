@@ -34,7 +34,7 @@
         - name: Run mysql command
           become: true
           ansible.builtin.shell: mariadb --host={{ db_url }} --port=3306 --user={{ db_user }} --password={{ db_password }} < /home/ec2-user/user.sql
-          changed_when: true # temporary hack
+          changed_when: true
 
     - name: Set up remote ansible for quick patching through a pipeline
       block:
