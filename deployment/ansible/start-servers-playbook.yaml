@@ -74,11 +74,13 @@
   tasks:
     - name: Update or install docker
       become: true
+      tags: ['docker', 'docker_service']
       ansible.builtin.package:
         name: docker
 
     - name: Start and enable docker daemon
       become: true
+      tags: ['docker', 'docker_service']
       ansible.builtin.service:
         name: docker
         state: started
@@ -86,6 +88,7 @@
 
     - name: Pull docker image
       become: true
+      tags: ['docker', 'docker_image']
       community.docker.docker_image:
         name: '{{ docker_image }}'
         source: pull
@@ -94,6 +97,7 @@
 
     - name: Run docker image
       become: true
+      tags: ['docker', 'docker_image']
       community.docker.docker_container:
         name: webserver_container
         image: '{{ docker_image }}'
@@ -111,10 +115,10 @@
   hosts: monitoring
   remote_user: ec2-user
   vars_files:
-    - ./tf_variables.yaml
+    - "{{ playbook_dir }}/tf_variables.yaml"
   roles:
     - role: prometheus.prometheus.prometheus
-      tags: ['config']
+      tags: ['monitoring', 'scraping']
       prometheus_scrape_configs:
         - job_name: 'prometheus'
           static_configs:
