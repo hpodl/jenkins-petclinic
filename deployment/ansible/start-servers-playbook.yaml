@@ -131,3 +131,17 @@
         - scheme: http
           static_configs:
             - targets: ['localhost:9093']
+
+
+- name: Add grafana dashboard
+  hosts: monitoring
+  remote_user: "ec2-user"
+  become: true
+  vars_files: "{{ playbook_dir }}/grafana_variables.yaml"
+  tasks:
+    - name: Create Grafana dashboard
+      tags: ['grafana', 'dashboard']
+      community.grafana.grafana_dashboard:
+        grafana_api_key: "{{ grafana_cloud_api_key }}"
+        grafana_url: "{{ grafana_url }}:3000"
+        dashboard_id: 14845
