@@ -1,0 +1,8 @@
+FROM mysql:8.0.0
+WORKDIR /
+ENV MYSQL_ALLOW_EMPTY_PASSWORD=1
+
+COPY user.sql /docker-entrypoint-initdb.d/user.sql
+
+# app port
+EXPOSE 3306

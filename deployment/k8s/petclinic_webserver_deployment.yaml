@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic-webserver-deployment
+  labels:
+    app: petclinic-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: petclinic-app
+  template:
+    metadata:
+      labels:
+        app: petclinic-app
+    spec:
+      containers:
+      - name: petclinic
+        image: mydockertestacc/main:1.5.0
+        env:
+        - name: RUN_PROFILE
+          value: mysql
+        - name: MYSQL_USER
+          value: petclinic-db
+        - name: MYSQL_PASS
+          value: petclinic
+        - name: MYSQL_URL
+          value: jdbc:mysql://petclinic-db/petclinic
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: 2048Mi
+            cpu: "1"

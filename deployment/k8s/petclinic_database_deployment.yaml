@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic-db-deployment
+  labels:
+    app: petclinic-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petclinic-db
+  template:
+    metadata:
+      labels:
+        app: petclinic-db
+    spec:
+      containers:
+      - name: petclinic-db
+        volumeMounts:
+          - name:  startup-script
+            mountPath: /docker-entrypoint-initdb.d
+        image: mysql:8.0.0
+        env:
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "true"
+        ports:
+        - containerPort: 3306
+        resources:
+          limits:
+            memory: 4096Mi
+            cpu: "4"
+      volumes:
+        - name: startup-script
+          configMap:
+            name: "startup-script"
+            items:
+            - key: user.sql
+              path: user.sql
